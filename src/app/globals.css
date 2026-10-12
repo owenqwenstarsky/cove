@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f3eee4;
+  --foreground: #1c1915;
+  --paper: #fbf7f0;
+  --sidebar: #1e2b27;
+  --sidebar-foreground: #f6f1e8;
+  --copper: #c4622d;
+  --copper-deep: #9a4a1e;
+  --tide: #2f6f64;
+  --line: #e4d9c8;
+  --muted: #6e665c;
+  --danger: #9d3418;
+  --card: #fffdf8;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-paper: var(--paper);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-copper: var(--copper);
+  --color-copper-deep: var(--copper-deep);
+  --color-tide: var(--tide);
+  --color-line: var(--line);
+  --color-muted: var(--muted);
+  --color-danger: var(--danger);
+  --color-card: var(--card);
+  --font-sans: var(--font-outfit);
+  --font-display: var(--font-fraunces);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-outfit), sans-serif;
+}
+
+dialog {
+  margin: auto;
+  color: var(--foreground);
+}
+
+dialog::backdrop {
+  background: rgb(28 25 21 / 0.48);
+}
+
+.cove-doc .ProseMirror {
+  min-height: 62vh;
+  outline: none;
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.cove-doc .ProseMirror p.is-editor-empty:first-child::before {
+  color: var(--muted);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.cove-doc .ProseMirror h1,
+.cove-doc .ProseMirror h2,
+.cove-doc .ProseMirror h3 {
+  font-family: var(--font-fraunces), serif;
+  line-height: 1.2;
+  margin: 1.2rem 0 0.5rem;
+}
+
+.cove-doc .ProseMirror h1 { font-size: 2.1rem; }
+.cove-doc .ProseMirror h2 { font-size: 1.6rem; }
+.cove-doc .ProseMirror h3 { font-size: 1.3rem; }
+
+.cove-doc .ProseMirror ul,
+.cove-doc .ProseMirror ol {
+  margin: 0.6rem 0;
+  padding-left: 1.4rem;
+}
+
+.cove-doc .ProseMirror ul { list-style: disc; }
+.cove-doc .ProseMirror ol { list-style: decimal; }
+
+.cove-doc .ProseMirror a {
+  color: var(--tide);
+  text-decoration: underline;
+}
+
+.cove-doc .ProseMirror table {
+  border-collapse: collapse;
+  margin: 1rem 0;
+  width: 100%;
+}
+
+.cove-doc .ProseMirror td,
+.cove-doc .ProseMirror th {
+  border: 1px solid var(--line);
+  min-width: 4rem;
+  padding: 0.4rem 0.55rem;
+  vertical-align: top;
+}
+
+.cove-doc .ProseMirror th {
+  background: #f6f0e6;
+  text-align: left;
+}
+
+.sheet-error {
+  color: var(--danger);
+}
+
+.menu-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.menu-item:hover {
+  background: var(--background);
+}

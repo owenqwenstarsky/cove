@@ -1,0 +1,9 @@
+export const GB = 1024 * 1024 * 1024;
+export const MB = 1024 * 1024;
+export const DEFAULT_QUOTA_BYTES = 15 * GB;
+export const DEFAULT_MAX_UPLOAD_BYTES = 100 * MB;
+export const SESSION_DAYS = 30;
+export const COOKIE_NAME = "cove_session";
+export const EDITOR_JSON_LIMIT = 1_500_000;
+export const INVITE_DAYS = 14;
+export const DEFAULT_UPLOAD_PATH = "data/uploads";

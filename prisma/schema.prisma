@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum ItemKind {
+  FOLDER
+  FILE
+  DOCUMENT
+  SPREADSHEET
+  PRESENTATION
+}
+
+enum Permission {
+  VIEW
+  EDIT
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  role         Role      @default(USER)
+  disabled     Boolean   @default(false)
+  quotaBytes   BigInt?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  sessions     Session[]
+  items        Item[]
+  shares       Share[]
+  invites      Invite[]
+
+  @@index([role])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Setting {
+  key   String @id
+  value Json
+}
+
+model Item {
+  id           String         @id @default(cuid())
+  name         String
+  kind         ItemKind
+  parentId     String?
+  parent       Item?          @relation("Tree", fields: [parentId], references: [id], onDelete: Cascade)
+  children     Item[]         @relation("Tree")
+  ownerId      String
+  owner        User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  trashedAt    DateTime?
+  starred      Boolean        @default(false)
+  sizeBytes    BigInt         @default(0)
+  mimeType     String?
+  storageKey   String?
+  version      Int            @default(1)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  document     Document?
+  spreadsheet  Spreadsheet?
+  presentation Presentation?
+  shares       Share[]
+  shareLink    ShareLink?
+
+  @@index([parentId])
+  @@index([ownerId])
+  @@index([trashedAt])
+  @@index([ownerId, starred])
+}
+
+model Document {
+  itemId  String @id
+  item    Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  content Json
+}
+
+model Spreadsheet {
+  itemId  String @id
+  item    Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  content Json
+}
+
+model Presentation {
+  itemId  String @id
+  item    Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  content Json
+}
+
+model Share {
+  id         String     @id @default(cuid())
+  itemId     String
+  item       Item       @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission Permission
+  createdAt  DateTime   @default(now())
+
+  @@unique([itemId, userId])
+  @@index([userId])
+}
+
+model ShareLink {
+  id         String     @id @default(cuid())
+  itemId     String     @unique
+  item       Item       @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  token      String     @unique
+  permission Permission
+  enabled    Boolean    @default(true)
+  createdAt  DateTime   @default(now())
+}
+
+model Invite {
+  id          String    @id @default(cuid())
+  token       String    @unique
+  email       String?
+  createdById String
+  createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  expiresAt   DateTime?
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([createdById])
+}

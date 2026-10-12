@@ -1,0 +1,55 @@
+# Local Cove stack.
+# The Postgres password fallback is for development-only one-command startup.
+# Override POSTGRES_USER, POSTGRES_PASSWORD, and POSTGRES_DB in the shell when you start Compose.
+# App settings (site name, registration, quotas) live in the database, not here.
+
+services:
+  db:
+    image: postgres:16.10
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cove}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cove}
+      POSTGRES_DB: ${POSTGRES_DB:-cove}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cove} -d ${POSTGRES_DB:-cove}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-cove}:${POSTGRES_PASSWORD:-cove}@db:5432/${POSTGRES_DB:-cove}?connect_timeout=3
+      NODE_ENV: production
+    volumes:
+      - uploads:/app/data/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/login').then((r)=>process.exit(r.ok||r.status===307?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 40s
+    restart: unless-stopped
+
+volumes:
+  db-data:
+  uploads:
